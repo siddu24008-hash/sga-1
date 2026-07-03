@@ -1,0 +1,55 @@
+Question 2 - Secure Project Workspace Setup
+=========================================
+Date: 2026-07-03
+Location: /workspaces/sga-1/q2
+
+Commands executed:
+1. mkdir -p secure_workspace/{docs,src,logs}
+2. touch secure_workspace/docs/plan.txt secure_workspace/src/app.txt secure_workspace/logs/activity.log
+3. ls -ld secure_workspace secure_workspace/*
+4. chmod 750 secure_workspace
+5. chmod 750 secure_workspace/docs secure_workspace/src secure_workspace/logs
+6. chmod 640 secure_workspace/docs/plan.txt secure_workspace/src/app.txt secure_workspace/logs/activity.log
+7. ls -ld secure_workspace secure_workspace/*
+8. ls -l secure_workspace/*
+9. umask
+
+Output:
+Before permissions:
+$ ls -ld secure_workspace secure_workspace/*
+drwxrwxrwx+ 5 codespace codespace 4096 Jul 3 18:13 secure_workspace
+drwxrwxrwx+ 2 codespace codespace 4096 Jul 3 18:13 secure_workspace/docs
+drwxrwxrwx+ 2 codespace codespace 4096 Jul 3 18:13 secure_workspace/logs
+drwxrwxrwx+ 2 codespace codespace 4096 Jul 3 18:13 secure_workspace/src
+-rw-rw-rw- 1 codespace codespace 0 Jul 3 18:13 secure_workspace/docs/plan.txt
+-rw-rw-rw- 1 codespace codespace 0 Jul 3 18:13 secure_workspace/logs/activity.log
+-rw-rw-rw- 1 codespace codespace 0 Jul 3 18:13 secure_workspace/src/app.txt
+
+After permissions:
+$ ls -ld secure_workspace secure_workspace/*
+drwxr-x---+ 5 codespace codespace 4096 Jul 3 18:13 secure_workspace
+drwxr-x---+ 2 codespace codespace 4096 Jul 3 18:13 secure_workspace/docs
+drwxr-x---+ 2 codespace codespace 4096 Jul 3 18:13 secure_workspace/logs
+drwxr-x---+ 2 codespace codespace 4096 Jul 3 18:13 secure_workspace/src
+-rw-r----- 1 codespace codespace 0 Jul 3 18:13 secure_workspace/docs/plan.txt
+-rw-r----- 1 codespace codespace 0 Jul 3 18:13 secure_workspace/logs/activity.log
+-rw-r----- 1 codespace codespace 0 Jul 3 18:13 secure_workspace/src/app.txt
+
+Ownership:
+$ stat -c '%n %U:%G %A' secure_workspace secure_workspace/docs secure_workspace/src secure_workspace/logs secure_workspace/docs/plan.txt secure_workspace/src/app.txt secure_workspace/logs/activity.log
+secure_workspace codespace:codespace drwxr-x---
+secure_workspace/docs codespace:codespace drwxr-x---
+secure_workspace/src codespace:codespace drwxr-x---
+secure_workspace/logs codespace:codespace drwxr-x---
+secure_workspace/docs/plan.txt codespace:codespace -rw-r-----
+secure_workspace/src/app.txt codespace:codespace -rw-r-----
+secure_workspace/logs/activity.log codespace:codespace -rw-r-----
+
+$ umask
+0022
+
+Observations:
+- The secure workspace was created with docs, src, and logs folders for project separation.
+- Permissions were tightened to 750 for directories and 640 for files so only the owner can read or write them.
+- The default umask value was 0022, which keeps newly created files mostly readable by others and directories accessible to the owner/group.
+- These permissions protect project data by limiting access to the owner and preventing wider exposure.

@@ -1,0 +1,61 @@
+Question 3 - File System and Link Analysis
+=========================================
+Date: 2026-07-03
+Location: /workspaces/sga-1/q3
+
+Commands executed:
+1. echo "Linux link test file" > original.txt
+2. ln original.txt hardlink.txt
+3. ln -s original.txt symlink.txt
+4. ls -li original.txt hardlink.txt symlink.txt
+5. stat original.txt hardlink.txt symlink.txt
+6. cat original.txt
+7. cat hardlink.txt
+8. cat symlink.txt
+9. rm original.txt
+10. ls -li hardlink.txt symlink.txt
+11. cat hardlink.txt
+12. cat symlink.txt
+
+Output:
+$ ls -li original.txt hardlink.txt symlink.txt
+1310804 -rw-rw-rw- 2 codespace codespace 21 Jul 3 18:13 hardlink.txt
+1310804 -rw-rw-rw- 2 codespace codespace 21 Jul 3 18:13 original.txt
+1310805 lrwxrwxrwx 1 codespace codespace 12 Jul 3 18:13 symlink.txt -> original.txt
+
+$ stat original.txt hardlink.txt symlink.txt
+File: original.txt
+Inode: 1310804
+Links: 2
+File: hardlink.txt
+Inode: 1310804
+Links: 2
+File: symlink.txt -> original.txt
+Inode: 1310805
+Links: 1
+
+$ cat original.txt
+Linux link test file
+
+$ cat hardlink.txt
+Linux link test file
+
+$ cat symlink.txt
+Linux link test file
+
+After removing original.txt:
+$ ls -li hardlink.txt symlink.txt
+1310804 -rw-rw-rw- 1 codespace codespace 21 Jul 3 18:13 hardlink.txt
+1310805 lrwxrwxrwx 1 codespace codespace 12 Jul 3 18:13 symlink.txt -> original.txt
+
+$ cat hardlink.txt
+Linux link test file
+
+$ cat symlink.txt
+cat: symlink.txt: No such file or directory
+
+Observations:
+- The hard link and the original file share the same inode and link count, showing they are two directory entries for the same data.
+- The symbolic link has a different inode and points to the original filename, so it breaks if the target is removed.
+- Deleting the original file does not affect the hard link, but it makes the symbolic link invalid.
+- This demonstrates that hard links preserve file content through inode sharing while symbolic links depend on the target path.

@@ -1,0 +1,51 @@
+Question 4 - File Access and I/O Investigation
+============================================
+Date: 2026-07-03
+Location: /workspaces/sga-1/q4
+
+Commands executed:
+1. echo "sample log line" > app.log
+2. lsof | head -n 20
+3. exec 3<app.log
+4. lsof -p $$ | grep app.log
+5. ls -l /proc/$$/fd | grep app.log
+6. ls -l /proc/$$/fd
+7. ls -l > stdout.txt
+8. ls /not_a_real_path 2> stderr.txt
+9. (ls -l && ls /not_a_real_path) > combined.txt 2>&1
+10. ulimit -a
+11. exec 3<&-
+
+Output:
+$ lsof -p $$ | grep app.log
+bash 12265 codespace 3r REG 7,4 16 1310806 /workspaces/sga-1/q4/app.log
+
+$ ls -l /proc/$$/fd | grep app.log
+lr-x------ 1 codespace codespace 64 Jul 3 18:13 3 -> /workspaces/sga-1/q4/app.log
+
+$ ls -l /proc/$$/fd
+total 0
+lrwx------ 1 codespace codespace 64 Jul 3 18:13 0 -> /dev/pts/5
+lrwx------ 1 codespace codespace 64 Jul 3 18:13 1 -> /dev/pts/5
+lrwx------ 1 codespace codespace 64 Jul 3 18:13 2 -> /dev/pts/5
+lrwx------ 1 codespace codespace 64 Jul 3 18:13 255 -> /dev/pts/5
+lr-x------ 1 codespace codespace 64 Jul 3 18:13 3 -> /workspaces/sga-1/q4/app.log
+lrwx------ 1 codespace codespace 64 Jul 3 18:13 32 -> /dev/pts/ptmx
+l-wx------ 1 codespace codespace 64 Jul 3 18:13 6 -> /dev/null
+
+$ ulimit -a
+real-time non-blocking time (microseconds, -R) unlimited
+core file size (blocks, -c) unlimited
+data seg size (kbytes, -d) unlimited
+file size (blocks, -f) unlimited
+open files (-n) 524288
+stack size (kbytes, -s) 8192
+cpu time (seconds, -t) unlimited
+max user processes (-u) unlimited
+virtual memory (kbytes, -v) unlimited
+
+Observations:
+- File descriptor 3 was opened for app.log and appears in both lsof and /proc/$$/fd.
+- Standard output, standard error, and file descriptors are handled as streams by the shell.
+- Redirection sent directory listings to stdout.txt and error output to stderr.txt, while combined.txt captured both streams.
+- Resource limits showed that the shell can open many files and has no hard limit for several common resources.

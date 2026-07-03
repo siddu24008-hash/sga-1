@@ -1,0 +1,67 @@
+Question 5 - Storage Assessment and Documentation
+================================================
+Date: 2026-07-03
+Location: /workspaces/sga-1/q5
+
+Commands executed:
+1. lsblk
+2. mount | head -n 12
+3. df -h
+4. df -i
+
+Output:
+$ lsblk
+NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINTS
+loop0 7:0 0 63.8M 1 loop
+loop1 7:1 0 91.7M 1 loop
+loop2 7:2 0 49.3M 1 loop
+loop3 7:3 0 257G 0 loop
+loop4 7:4 0 32G 0 loop /workspaces
+loop5 7:5 0 500M 0 loop
+sda 8:0 0 30G 0 disk
+├─sda1 8:1 0 29.9G 0 part /workspaces/.codespaces/shared /vscode /usr/sbin/docker-init
+├─sda14 8:14 0 4M 0 part
+└─sda15 8:15 0 106M 0 part
+sdb 8:16 0 45G 0 disk
+└─sdb1 8:17 0 45G 0 part /tmp
+sdc 8:32 0 512G 0 disk
+└─sdc1 8:33 0 512G 0 part
+sr0 11:0 1 628K 0 rom
+
+$ mount | head -n 12
+overlay on / type overlay
+proc on /proc type proc
+tmpfs on /dev type tmpfs
+devpts on /dev/pts type devpts
+sysfs on /sys type sysfs
+cgroup on /sys/fs/cgroup type cgroup2
+mqueue on /dev/mqueue type mqueue
+shm on /dev/shm type tmpfs
+/dev/sda1 on /usr/sbin/docker-init type ext4
+/dev/sdb1 on /tmp type ext4
+/dev/loop4 on /workspaces type ext4
+
+$ df -h
+Filesystem Size Used Avail Use% Mounted on
+overlay 32G 9.6G 21G 33% /
+tmpfs 64M 0 64M 0% /dev
+shm 64M 0 64M 0% /dev/shm
+/dev/root 29G 24G 5.6G 81% /vscode
+/dev/sdb1 44G 2.5G 40G 6% /tmp
+/dev/loop4 32G 9.6G 21G 33% /workspaces
+
+$ df -i
+Filesystem Inodes IUsed IFree IUse% Mounted on
+overlay 2097152 203078 1894074 10% /
+tmpfs 1016900 213 1016687 1% /dev
+shm 1016900 1 1016899 1% /dev/shm
+/dev/root 3870720 243502 3627218 7% /vscode
+/dev/sdb1 2949120 38 2949082 1% /tmp
+/dev/loop4 2097152 203078 1894074 10% /workspaces
+
+Observations:
+- Several block devices are visible, including sda, sdb, and sdc, with partitions mounted for system and workspace use.
+- The main workspace filesystem has ample free space and low inode usage, so storage pressure is not immediate.
+- The /tmp filesystem is also lightly used and has substantial free capacity.
+- Recommendations: monitor growth of container overlays and logs, clean temporary files regularly, and consider separate storage for data-heavy workloads if usage increases.
+
